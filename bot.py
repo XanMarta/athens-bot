@@ -1,4 +1,5 @@
 import json
+import os
 from discord.ext import commands
 from discord.ext.commands import CommandNotFound
 
@@ -9,9 +10,14 @@ class DiscordBot:
         self.bot = commands.Bot(command_prefix='>')
 
     def __read_data(self):
-        with open('token.json', 'r') as f:
-            data = json.load(f)
-        self.token = data['TOKEN']
+        if os.path.isfile('token.json'):
+            with open('token.json', 'r') as f:
+                data = json.load(f)
+            self.token = data['TOKEN']
+            if self.token == "":
+                print('Token invalid')
+        else:
+            print('Token file not found')
 
     def __set_command(self):
         @self.bot.event
@@ -44,9 +50,13 @@ class DiscordBot:
         print('Staring bot ...')
         self.bot.run(self.token)
 
-    def add_func(self, cmd, func):
+    def add_func(self, cmd, func, arg_parse=True):
         setattr(self, cmd, func)
-
-        @self.bot.command(name=cmd)
-        async def f(ctx, *args):
-            await getattr(self, cmd)(ctx, args)
+        if arg_parse:
+            @self.bot.command(name=cmd)
+            async def f(ctx, *args):
+                await getattr(self, cmd)(ctx, args)
+        else:
+            @self.bot.command(name=cmd)
+            async def f(ctx, *, args):
+                await getattr(self, cmd)(ctx, args)

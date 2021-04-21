@@ -8,7 +8,7 @@ class MainProgram(DiscordBot):
 
     def set_method(self):
         async def request(ctx, args):
-            await self.send_back(ctx, f'hello there. Num of args: {len(args)}')
+            await self.send_back(ctx, f'Hello there. Num of args: {len(args)}')
         self.add_func('hello', request)
 
 
