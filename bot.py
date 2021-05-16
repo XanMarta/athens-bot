@@ -2,16 +2,18 @@ import json
 import os
 from discord.ext import commands
 from discord.ext.commands import CommandNotFound
+from discord import Embed
 
 
-class DiscordBot:
+class BotModule:
     def __init__(self):
         self.token = ''
         self.bot = commands.Bot(command_prefix='>')
+        self.prefix = '>'
 
     def __read_data(self):
-        if os.path.isfile('token.json'):
-            with open('token.json', 'r') as f:
+        if os.path.isfile('config/token.json'):
+            with open('config/token.json', 'r') as f:
                 data = json.load(f)
             self.token = data['TOKEN']
             if self.token == "":
@@ -31,23 +33,32 @@ class DiscordBot:
                 return
             raise error
 
-    # React function
+    # Reply function
 
-    def thumbs_up(self, ctx):
-        pass
+    async def react_yes(self, ctx):
+        await ctx.message.add_reaction("✅")
 
-    def thumbs_down(self, ctx):
-        pass
+    async def react_no(self, ctx):
+        await ctx.message.add_reaction("🚫")
 
-    async def send_back(self, ctx, msg):
-        await ctx.send(f'>>> {msg}')
+    async def send_back(self, ctx, msg, embed=False):
+        if embed:
+            e = Embed()
+            e.title = 'Thank you!'
+            e.description = msg
+            return await ctx.send(embed=e)
+        else:
+            return await ctx.send(f'>>> {msg}')
+
+    async def send_embed(self, ctx, embed):
+        return await ctx.send(embed=embed)
 
     # Callable function
 
     def start_bot(self):
         self.__read_data()
         self.__set_command()
-        print('Staring bot ...')
+        print('Starting bot ...')
         self.bot.run(self.token)
 
     def add_func(self, cmd, func, arg_parse=True):

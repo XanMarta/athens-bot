@@ -126,3 +126,5 @@ dmypy.json
 
 
 .idea/
+.venv-win/
+venv-win/
